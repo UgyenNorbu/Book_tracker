@@ -6,20 +6,7 @@ class Book():
         self.name = bookName
         self.author = authorName
         self.status = status
-        # self.start = None
-        # self.end = None
-        self.conn = sqlite3.connect("library.db")
-        self.cursor = self.conn.cursor()
-        self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS books (
-                name text, 
-                author text, 
-                status text
-                )
-                """)
-        self.cursor.execute("INSERT INTO books VALUES (?, ?, ?)", (self.name, self.author, self.status))
-        self.conn.commit()
-        print(f"- Book '{self.name}' by '{self.author}' is added to the library.\n")
+        print(f"- Book '{self.name}' by '{self.author}' is created.")
 
 
     # def start_reading(self):
@@ -34,10 +21,10 @@ class Book():
     #     self.status = "Finished"
     #     print(f"- Book '{self.name}' by '{self.author}' finished reading on {formatted_date}\n")
 
-    def start_reading(self):
-        self.status = "Reading"
-        self.cursor.execute("UPDATE boosk SET status = ? WHERE name = ? AND author = ?", (self.status, self.naem, self.author))
-        self.conn.commit()
+    # def start_reading(self):
+    #     self.status = "Reading"
+    #     self.cursor.execute("UPDATE books SET status = ? WHERE name = ? AND author = ?", (self.status, self.name, self.author))
+    #     self.conn.commit()
 class ReadingList:
 
     def __init__(self):
@@ -46,17 +33,21 @@ class ReadingList:
         self.cursor = self.conn.cursor()
         self.cursor.execute(""" 
             CREATE TABLE IF NOT EXISTS reading_list(
-                name text,
-                author text,
-                status text
+                name TEXT,
+                author TEXT,
+                status TEXT
             )
         """)
+        print(f"* Reading list created.\n")
         
     def add_book(self, book):
-        self.books.append(book)
-        self.cursor.execute("INSERT INTO reading_list VALUES (?, ?, ?)", (self.name, self.author, self.status))
-        self.conn.commit()
-        print(f"{book.name} added to the reading list.")
+        all_books = self.cursor.execute("SELECT * FROM reading_list WHERE name = ? AND author = ?", (book.name, book.author))
+        if not all_books.fetchone():
+            self.cursor.execute("INSERT INTO reading_list VALUES (?, ?, ?)", (book.name, book.author, book.status))
+            self.conn.commit()
+            print(f"- '{book.name}' added to the reading list.")
+        else:
+            print(f"- ERROR: '{book.name}' cannot be added to the reading list as it already exists.")
     
     # def display_reading_list(self):
     #     for book in self.books:
