@@ -88,3 +88,14 @@ class ReadingList:
         """
         self.cursor.execute("UPDATE reading_list SET status = ? WHERE name = ? AND author = ?", (book.status, book.name, book.author))
         self.conn.commit()
+    
+    def display_reading_list(self):
+        """
+        Displays the reading list.
+
+        This method displays the list of books in the reading list in a table format.
+        """
+        all_books = self.cursor.execute("SELECT * FROM reading_list")
+        table = [[book[0], book[1], book[2], book[3]] for book in all_books]
+        print(tabulate(table, headers= ["Book title", "Author", "Reading status", "Availability"]))
+        print("\n*** End of reading list. ***")
