@@ -19,23 +19,27 @@ class Book():
         self.availability = available
         print(f"- Book '{self.name}' by '{self.author}' is created.")
 
+    def start_reading(self, reading_list):
+        """
+        Updates the status of the book to "Reading".
 
-    # def start_reading(self):
-    #     self.start = datetime.datetime.now()
-    #     formatted_date = self.start.strftime("%A, %-dth %b. %Y")
-    #     self.status = "Reading"
-    #     print(f"- Book '{self.name}' by '{self.author}' started reading since {formatted_date}\n")
-        
-    # def end_reading(self):
-    #     self.end = datetime.datetime.now()
-    #     formatted_date = self.start.strftime("%A, %-dth %b. %Y")
-    #     self.status = "Finished"
-    #     print(f"- Book '{self.name}' by '{self.author}' finished reading on {formatted_date}\n")
+        Args:
+            reading_list (ReadingList): A reading list object which contains the books.
+        """
+        self.status = "Reading"
+        reading_list._update_book_status(self)
+        print(f"- Status of '{self.name}' updated to 'Reading'.")
 
-    # def start_reading(self):
-    #     self.status = "Reading"
-    #     self.cursor.execute("UPDATE books SET status = ? WHERE name = ? AND author = ?", (self.status, self.name, self.author))
-    #     self.conn.commit()
+    def complete_reading(self, reading_list):
+        """
+        Updates the status of the book to "Completed".
+
+        Args:
+            reading_list (ReadingList): A reading list object which contains the books.
+        """
+        self.status = "Completed"
+        reading_list._update_book_status(self)
+        print(f"- Status of '{self.name}' updated to 'Completed'.")
 class ReadingList:
 
     def __init__(self):
