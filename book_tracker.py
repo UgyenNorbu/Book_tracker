@@ -3,9 +3,20 @@ import sqlite3
 import datetime
 class Book():
     def __init__(self, bookName, authorName, status = "Not started"):
+    def __init__(self, bookName, authorName, status = "Not started", available = "Yes"):
+        """
+        Initializes a book object.
+
+        Args:
+            bookName (str): Title of the book.
+            authorName (str): Name of the author(s).
+            status (str, optional): Reading status of the book. Defaults to "Not started".
+            available (str, optional): Availability of the book. Defaults to "Yes".
+        """
         self.name = bookName
         self.author = authorName
         self.status = status
+        self.availability = available
         print(f"- Book '{self.name}' by '{self.author}' is created.")
 
 
