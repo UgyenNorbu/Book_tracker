@@ -79,3 +79,12 @@ class ReadingList:
         else:
             print(f"- ERROR: '{book.name}' cannot be added to the reading list as it already exists.")
     
+    def _update_book_status(self, book):
+        """
+        A private method that updates the status of a book in the reading list.
+
+        Args:
+            book (Book): A book object which contains the status of the book.
+        """
+        self.cursor.execute("UPDATE reading_list SET status = ? WHERE name = ? AND author = ?", (book.status, book.name, book.author))
+        self.conn.commit()
