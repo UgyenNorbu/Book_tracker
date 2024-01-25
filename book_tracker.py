@@ -1,9 +1,11 @@
 import sqlite3
+from tabulate import tabulate
 
-import datetime
 class Book():
-    def __init__(self, bookName, authorName, status = "Not started"):
-    def __init__(self, bookName, authorName, status = "Not started", available = "Yes"):
+    """
+    A class to represent a book.
+    """
+    def __init__(self, bookTitle, authorName, status = "Not started", available = "Yes"):
         """
         Initializes a book object.
 
@@ -13,11 +15,11 @@ class Book():
             status (str, optional): Reading status of the book. Defaults to "Not started".
             available (str, optional): Availability of the book. Defaults to "Yes".
         """
-        self.name = bookName
+        self.title = bookTitle
         self.author = authorName
         self.status = status
         self.availability = available
-        print(f"- Book '{self.name}' by '{self.author}' is created.")
+        print(f"- Book '{self.title}' by '{self.author}' is created.")
 
     def start_reading(self, reading_list):
         """
@@ -28,18 +30,17 @@ class Book():
         """
         self.status = "Reading"
         reading_list._update_book_status(self)
-        print(f"- Status of '{self.name}' updated to 'Reading'.")
+        print(f"- Status of '{self.title}' updated to 'Reading'.")
 
     def complete_reading(self, reading_list):
         """
         Updates the status of the book to "Completed".
 
         Args:
-            reading_list (ReadingList): A reading list object which contains the books.
+            reading_list (ReadingList): A ReadingList object which contains the books.
         """
         self.status = "Completed"
         reading_list._update_book_status(self)
-        print(f"- Status of '{self.name}' updated to 'Completed'.")
 class ReadingList:
     """
     A class to represent a reading list.
@@ -54,10 +55,10 @@ class ReadingList:
         self.cursor.execute(
             """ 
             CREATE TABLE IF NOT EXISTS reading_list(
-                name TEXT,
-                author TEXT,
-                status TEXT,
-                availability TEXT
+                Title TEXT,
+                Author TEXT,
+                Status TEXT,
+                Availability TEXT
             )
         """)
         print(f"* Reading list created.\n")
@@ -71,13 +72,13 @@ class ReadingList:
         Args:
             book (Book): A book object which contains the details of the book.
         """
-        all_books = self.cursor.execute("SELECT * FROM reading_list WHERE name = ? AND author = ?", (book.name, book.author))
+        all_books = self.cursor.execute("SELECT * FROM reading_list WHERE Title = ? AND Author = ?", (book.title, book.author))
         if not all_books.fetchone():
-            self.cursor.execute("INSERT INTO reading_list VALUES (?, ?, ?, ?)", (book.name, book.author, book.status, book.availability))
+            self.cursor.execute("INSERT INTO reading_list VALUES (?, ?, ?, ?)", (book.title, book.author, book.status, book.availability))
             self.conn.commit()
-            print(f"- '{book.name}' added to the reading list.")
+            print(f"- '{book.title}' added to the reading list.")
         else:
-            print(f"- ERROR: '{book.name}' cannot be added to the reading list as it already exists.")
+            print(f"- ERROR: Cannot add '{book.title}' to the reading list as the book already exists.")
     
     def _update_book_status(self, book):
         """
@@ -86,7 +87,7 @@ class ReadingList:
         Args:
             book (Book): A book object which contains the status of the book.
         """
-        self.cursor.execute("UPDATE reading_list SET status = ? WHERE name = ? AND author = ?", (book.status, book.name, book.author))
+        self.cursor.execute("UPDATE reading_list SET Status = ? WHERE Title = ? AND Author = ?", (book.status, book.title, book.author))
         self.conn.commit()
     
     def _helper_lend_to(self, book, user):
@@ -129,8 +130,10 @@ class ReadingList:
         """
         all_books = self.cursor.execute("SELECT * FROM reading_list")
         table = [[book[0], book[1], book[2], book[3]] for book in all_books]
+        print("")
         print(tabulate(table, headers= ["Book title", "Author", "Reading status", "Availability"]))
-        print("\n*** End of reading list. ***")
+        print("\n*** End of reading list. ***\n")
+
 class User():
     """
     A class to represent a user.
