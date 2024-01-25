@@ -99,3 +99,45 @@ class ReadingList:
         table = [[book[0], book[1], book[2], book[3]] for book in all_books]
         print(tabulate(table, headers= ["Book title", "Author", "Reading status", "Availability"]))
         print("\n*** End of reading list. ***")
+class User():
+    """
+    A class to represent a user.
+    """
+    def __init__(self, name):
+        """
+        Initializes a user object.
+
+        Args:
+            name (str): Name of the user.
+        """
+        self.name = name
+        print(f"- User '{self.name}' is created.")
+    
+class UserList():
+    """
+    A class to represent a user list.
+    """
+    def __init__(self):
+        self.conn = sqlite3.connect("users_list.db")
+        self.cursor = self.conn.cursor()
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users(
+                Name TEXT
+            )
+        """)
+        print("* User list created.\n")
+
+    def add_user(self, user):
+        """
+        Adds a user to the user list.
+
+        Args:
+            user (User): A user object which contains the name of the user.
+        """
+        all_users = self.cursor.execute("SELECT * FROM users WHERE Name = ?", (user.name, ))
+        if not all_users.fetchone():
+            self.cursor.execute("INSERT INTO users VALUES (?)", (user.name,))
+            self.conn.commit()
+            print(f"- '{user.name}' added to the user list.")
+        else:
+            print(f"- ERROR: Cannot add '{user.name}' to the user list as the already exists.")
