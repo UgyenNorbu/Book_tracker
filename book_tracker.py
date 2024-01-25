@@ -41,6 +41,26 @@ class Book():
         """
         self.status = "Completed"
         reading_list._update_book_status(self)
+        print(f"- Status of '{self.title}' updated to 'Completed'.")
+    
+    def lend_to(self, user, reading_list):
+        """
+        Updates the availability of the book to "On loan to the user".
+
+        Args:
+            user (User): A User object which contains the name of the borrower.
+            reading_list (ReadingList): A ReadingList object that contains the books.
+        """
+        reading_list._helper_lend_to(self, user)
+    def return_book(self, reading_list):
+        """
+        Updates the availability of the book to "Yes" if the book was on loan.
+
+        Args:
+            reading_list (ReadingList): A ReadingList object that contains the books.
+        """
+        reading_list._helper_return_book(self)
+
 class ReadingList:
     """
     A class to represent a reading list.
