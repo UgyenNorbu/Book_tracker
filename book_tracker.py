@@ -89,6 +89,38 @@ class ReadingList:
         self.cursor.execute("UPDATE reading_list SET status = ? WHERE name = ? AND author = ?", (book.status, book.name, book.author))
         self.conn.commit()
     
+    def _helper_lend_to(self, book, user):
+        """
+        A private method that checks the availability of a book and updates it or throw message if not available.
+
+        Args:
+            book (_type_): _description_
+            user (_type_): _description_
+        """
+        current_availability = self.cursor.execute("SELECT Availability FROM reading_list WHERE Author = ? AND Title = ?", (book.author, book.title)).fetchone()
+        if current_availability[0] == "Yes":
+            self.cursor.execute("UPDATE reading_list SET Availability = ? WHERE Title = ? AND Author = ?", ("On loan to " + user.name, book.title, book.author))
+            self.conn.commit()
+            print(f"- Availability of '{book.title}' updated to 'On loan to {user.name}'.")
+        else:
+            print(f"- ERROR: The book '{book.title}' is not available for loan.")
+
+    def _helper_return_book(self, book):
+        """
+        A private method to check if a book is on loan and update it's availability status.
+
+        Args:
+            book (Book): A book object which contains the details of the book.
+        """
+        current_availability = self.cursor.execute("""
+            SELECT Availability FROM reading_list WHERE Author = ? AND Title = ?
+        """, (book.author, book.title)).fetchone()
+        if not current_availability == "Yes":
+            self.cursor.execute("UPDATE reading_list SET Availability = 'Yes' WHERE Title = ? AND Author = ?", (book.title, book.author))
+            self.conn.commit()
+            print(f"- Availability of '{book.title}' updated to 'Yes'.")
+        else:
+            print(f"- ERROR: Book {book.title} was never on loan.")
     def display_reading_list(self):
         """
         Displays the reading list.
